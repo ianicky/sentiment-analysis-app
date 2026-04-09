@@ -4,7 +4,7 @@ import os
 import pandas as pd
 
 # -------------------------------
-# PAGE CONFIG (MUST BE FIRST)
+# PAGE CONFIG
 # -------------------------------
 st.set_page_config(
     page_title="Sentiment Analysis",
@@ -13,81 +13,36 @@ st.set_page_config(
 )
 
 # -------------------------------
-# FORCE FULL UI STYLING (STRONG OVERRIDE)
+# SIMPLE CSS (SAFE - NO OVERRIDES)
 # -------------------------------
 st.markdown("""
 <style>
-
-/* FORCE LIGHT MODE */
-html, body, [class*="css"]  {
-    background-color: #f4f6f8 !important;
-    color: #2c3e50 !important;
-}
-
-/* Main container */
-[data-testid="stAppViewContainer"] {
-    background: #f4f6f8 !important;
-}
-
-/* Card layout */
-[data-testid="stVerticalBlock"] {
-    background-color: white !important;
-    padding: 30px !important;
-    border-radius: 15px !important;
-    box-shadow: 0px 4px 25px rgba(0,0,0,0.08) !important;
-    margin-bottom: 20px !important;
-}
-
-/* Title */
-h1 {
+.title {
     text-align: center;
-    font-size: 42px;
+    font-size: 36px;
+    font-weight: bold;
+    color: #1f4e79;
 }
 
-/* Subtitle */
-p {
+.subtitle {
     text-align: center;
     font-size: 18px;
+    margin-bottom: 20px;
 }
 
-/* Text area */
-textarea {
-    border-radius: 12px !important;
-    border: 2px solid #1f77b4 !important;
-    padding: 10px !important;
-}
-
-/* Button */
-div.stButton > button {
-    background: linear-gradient(90deg, #1f77b4, #0056b3);
-    color: white !important;
+.result {
+    padding: 15px;
     border-radius: 10px;
-    height: 3em;
-    font-size: 16px;
-    font-weight: bold;
-    transition: 0.3s;
-}
-
-/* Hover effect */
-div.stButton > button:hover {
-    transform: scale(1.05);
-}
-
-/* Result box */
-.result-box {
-    padding: 20px;
-    border-radius: 12px;
-    margin-top: 20px;
     text-align: center;
     font-size: 20px;
     font-weight: bold;
+    margin-top: 20px;
 }
-
 </style>
 """, unsafe_allow_html=True)
 
 # -------------------------------
-# FIXED PATH HANDLING (SAFE VERSION)
+# PATH SETUP (WORKING VERSION)
 # -------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -96,27 +51,23 @@ vectorizer_path = os.path.join(BASE_DIR, "model", "vectorizer.pkl")
 counts_path = os.path.join(BASE_DIR, "model", "sentiment_counts.csv")
 
 # -------------------------------
-# LOAD FILES SAFELY (PREVENT CRASH)
+# LOAD MODEL
 # -------------------------------
 try:
     model = pickle.load(open(model_path, "rb"))
     vectorizer = pickle.load(open(vectorizer_path, "rb"))
-except FileNotFoundError:
-    st.error("❌ Model files not found. Check your 'model' folder and file names.")
+except Exception as e:
+    st.error(f"Error loading model: {e}")
     st.stop()
 
 # -------------------------------
-# HEADER
+# HEADER (HTML)
 # -------------------------------
-st.markdown("""
-<div>
-    <h1>💬 Product Review Sentiment Analysis</h1>
-    <p>Analyze customer reviews using Machine Learning</p>
-</div>
-""", unsafe_allow_html=True)
+st.markdown('<div class="title">💬 Product Review Sentiment Analysis</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Analyze customer reviews using Machine Learning</div>', unsafe_allow_html=True)
 
 # -------------------------------
-# INPUT SECTION
+# INPUT
 # -------------------------------
 review = st.text_area("✍️ Enter a product review:")
 
@@ -126,25 +77,15 @@ if st.button("🔍 Analyze Sentiment"):
         data = vectorizer.transform([review])
         prediction = model.predict(data)[0]
 
-        st.subheader("Result:")
-
         if prediction == "positive":
-            st.markdown(
-                "<div class='result-box' style='background:#d4edda;color:#155724;'>✅ Positive 😊</div>",
-                unsafe_allow_html=True
-            )
+            st.markdown('<div class="result" style="background:#d4edda;color:#155724;">✅ Positive 😊</div>', unsafe_allow_html=True)
 
         elif prediction == "negative":
-            st.markdown(
-                "<div class='result-box' style='background:#f8d7da;color:#721c24;'>❌ Negative 😠</div>",
-                unsafe_allow_html=True
-            )
+            st.markdown('<div class="result" style="background:#f8d7da;color:#721c24;">❌ Negative 😠</div>', unsafe_allow_html=True)
 
         else:
-            st.markdown(
-                "<div class='result-box' style='background:#fff3cd;color:#856404;'>⚠️ Neutral 😐</div>",
-                unsafe_allow_html=True
-            )
+            st.markdown('<div class="result" style="background:#fff3cd;color:#856404;">⚠️ Neutral 😐</div>', unsafe_allow_html=True)
+
     else:
         st.warning("⚠️ Please enter a review")
 
