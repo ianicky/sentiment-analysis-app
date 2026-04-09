@@ -87,16 +87,23 @@ div.stButton > button:hover {
 """, unsafe_allow_html=True)
 
 # -------------------------------
-# FIXED PATH HANDLING
+# FIXED PATH HANDLING (SAFE VERSION)
 # -------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-model_path = os.path.join(BASE_DIR, 'model', 'model.pkl')
-vectorizer_path = os.path.join(BASE_DIR, 'model', 'vectorizer.pkl')
-counts_path = os.path.join(BASE_DIR, 'model', 'sentiment_counts.csv')
+model_path = os.path.join(BASE_DIR, "model", "model.pkl")
+vectorizer_path = os.path.join(BASE_DIR, "model", "vectorizer.pkl")
+counts_path = os.path.join(BASE_DIR, "model", "sentiment_counts.csv")
 
-model = pickle.load(open(model_path, 'rb'))
-vectorizer = pickle.load(open(vectorizer_path, 'rb'))
+# -------------------------------
+# LOAD FILES SAFELY (PREVENT CRASH)
+# -------------------------------
+try:
+    model = pickle.load(open(model_path, "rb"))
+    vectorizer = pickle.load(open(vectorizer_path, "rb"))
+except FileNotFoundError:
+    st.error("❌ Model files not found. Check your 'model' folder and file names.")
+    st.stop()
 
 # -------------------------------
 # HEADER
@@ -150,9 +157,7 @@ st.subheader("📊 Dataset Sentiment Distribution")
 try:
     counts = pd.read_csv(counts_path, index_col=0)
     counts = counts.squeeze()
-
     st.bar_chart(counts)
-
 except Exception as e:
     st.error(f"Visualization error: {e}")
 
