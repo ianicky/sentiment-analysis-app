@@ -14,7 +14,7 @@ st.set_page_config(
 )
 
 # -------------------------------
-# IMPROVED STYLING (CLARITY FIXED)
+# IMPROVED STYLING (CLARITY + HEADINGS FIXED)
 # -------------------------------
 st.markdown("""
 <style>
@@ -38,6 +38,15 @@ st.markdown("""
     font-size: 18px;
     color: #333;
     margin-bottom: 25px;
+}
+
+/* Section Titles (FIXED VISIBILITY) */
+.section-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1f4e79;
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 
 /* Labels */
@@ -71,11 +80,6 @@ div.stButton > button {
     font-size: 20px;
     font-weight: bold;
     margin-top: 20px;
-}
-
-/* Section spacing */
-section {
-    margin-top: 30px;
 }
 
 </style>
@@ -115,7 +119,7 @@ if "history" not in st.session_state:
 # -------------------------------
 # SINGLE REVIEW
 # -------------------------------
-st.subheader("✍️ Analyze a Review")
+st.markdown('<div class="section-title">✍️ Analyze a Review</div>', unsafe_allow_html=True)
 
 review = st.text_area("Enter your review here:")
 
@@ -125,7 +129,6 @@ if st.button("🔍 Analyze Sentiment"):
         data = vectorizer.transform([review])
         prediction = model.predict(data)[0]
 
-        # Confidence
         try:
             proba = model.predict_proba(data)[0]
             confidence = round(max(proba) * 100, 2)
@@ -150,7 +153,7 @@ if st.button("🔍 Analyze Sentiment"):
 # BULK ANALYSIS
 # -------------------------------
 st.markdown("---")
-st.subheader("📁 Bulk Analysis (Upload CSV)")
+st.markdown('<div class="section-title">📁 Bulk Analysis (Upload CSV)</div>', unsafe_allow_html=True)
 
 st.info("Upload a CSV file containing a column named 'review'")
 
@@ -181,7 +184,7 @@ if uploaded_file:
 # VISUALIZATION
 # -------------------------------
 st.markdown("---")
-st.subheader("📊 Dataset Sentiment Distribution")
+st.markdown('<div class="section-title">📊 Dataset Sentiment Distribution</div>', unsafe_allow_html=True)
 
 try:
     counts = pd.read_csv(counts_path, index_col=0).squeeze()
@@ -199,7 +202,7 @@ except Exception as e:
 # HISTORY
 # -------------------------------
 st.markdown("---")
-st.subheader("🕘 Prediction History")
+st.markdown('<div class="section-title">🕘 Prediction History</div>', unsafe_allow_html=True)
 
 if st.session_state.history:
     for item in reversed(st.session_state.history):
